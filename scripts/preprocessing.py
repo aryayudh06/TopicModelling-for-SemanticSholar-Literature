@@ -1,4 +1,3 @@
-# preprocessing.py
 import pandas as pd
 import nltk
 from nltk.corpus import stopwords
@@ -7,34 +6,51 @@ from nltk.stem import WordNetLemmatizer
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
 import re
+from deep_translator import GoogleTranslator
 
 # Download necessary NLTK data
 nltk.download('punkt')
 nltk.download('stopwords')
 nltk.download('wordnet')
 
+data_name = "semantic_scholar_results.csv"
+data_path = f"./data/{data_name}"
+
 # Load the CSV file
-df = pd.read_csv('../../data/universitas_brawijaya_scholar_results2.csv')
+df = pd.read_csv(data_path)
 
 # Initialize the lemmatizer
 lemmatizer = WordNetLemmatizer()
 
+# Define a function to detect and translate text
+def translate_text(text):
+    try:
+        lang = GoogleTranslator().detect(text)
+        if lang != 'en':
+            return GoogleTranslator(source=lang, target='en').translate(text)
+        return text
+    except Exception as e:
+        return text  # Return original text if translation fails
+
 # Define a function to preprocess the text
 def preprocess_text(text):
-    # Convert to lowercase
-    text = text.lower()
-    # Remove "[PDF]" or "[pdf]" using regular expression (case-insensitive)
+    text = str(text).lower()
+    text = translate_text(text)  # Translate before cleaning
     text = re.sub(r'\[pdf\]', '', text, flags=re.IGNORECASE)
-    # Remove punctuation
     text = re.sub(r'[^\w\s]', '', text)
-    # Tokenize the text
     tokens = word_tokenize(text)
-    # Remove stopwords and lemmatize
     tokens = [lemmatizer.lemmatize(word) for word in tokens if word not in stopwords.words('english')]
     return ' '.join(tokens)
 
+# Terapkan preprocessing pada kolom judul
+if 'title' in df.columns:
+    df['Processed_Title'] = df['title'].astype(str).apply(preprocess_text)
+else:
+    raise KeyError("Kolom 'title' tidak ditemukan dalam dataset")
+
 # Apply the preprocessing function to the 'Title' column
-df['Processed_Title'] = df['Title'].apply(preprocess_text)
+df['Processed_Title'] = df['title'].apply(preprocess_text)
+
 
 # Initialize the CountVectorizer
 vectorizer = CountVectorizer(max_df=0.95, min_df=2, max_features=1000, stop_words='english')
@@ -58,10 +74,8 @@ for index, topic in enumerate(lda.components_):
 topic_results = lda.transform(dtm)
 df['Topic'] = topic_results.argmax(axis=1)
 
-# Display the first few rows of the dataframe with assigned topics
-print(df[['Title', 'Topic']].head())
 
 # Save the preprocessed data
-path = '../../data/processed_data.csv'
+path = './data/processed_semantic_data.csv'
 df.to_csv(path, index=False)
 print(f"Preprocessed data saved to '{path}'")
