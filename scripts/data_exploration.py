@@ -1,7 +1,7 @@
 import pandas as pd
 
 # Load the processed data
-df = pd.read_csv('../../data/processed_data.csv')
+df = pd.read_csv('../data/processed_semantic_data.csv')
 
 # Basic statistics
 print(df.describe())

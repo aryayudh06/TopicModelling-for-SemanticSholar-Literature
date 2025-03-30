@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pipeline Control Dashboard</title>
+    <script>
+        const BASE_URL = "http://127.0.0.1:5000"; // Pastikan ini sesuai dengan Flask server
+
+        async function runPipeline(endpoint) {
+            try {
+                const response = await fetch(BASE_URL + endpoint, {
+                    method: "GET",
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                alert(data.message);
+
+                if (data.charts) {
+                    displayCharts(data.charts);
+                }
+            } catch (error) {
+                console.error("Error:", error);
+                alert("Failed to fetch data. Ensure Flask server is running and CORS is enabled.");
+            }
+        }
+
+        function displayCharts(charts) {
+            const chartContainer = document.getElementById('chart-container');
+            chartContainer.innerHTML = ''; // Clear previous charts
+            charts.forEach(chart => {
+                const img = document.createElement('img');
+                img.src = BASE_URL + chart; // Pastikan menggunakan BASE_URL
+                img.alt = "Chart";
+                img.style = "width: 100%; max-width: 600px; margin: 10px;";
+                chartContainer.appendChild(img);
+            });
+        }
+    </script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            margin: 20px;
+        }
+
+        button {
+            margin: 10px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Pipeline Control Dashboard</h1>
+    <button onclick="runPipeline('/run-crawl')">Run Crawling</button>
+    <button onclick="runPipeline('/run-preprocess')">Run Preprocessing</button>
+    <button onclick="runPipeline('/run-visualize')">Run Visualization</button>
+
+    <h2>Generated Charts</h2>
+    <div id="chart-container"></div>
+</body>
+
+</html>
