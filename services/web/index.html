@@ -10,6 +10,8 @@
 
         async function runPipeline(endpoint) {
             try {
+                console.log(`Fetching: ${BASE_URL + endpoint}`);
+
                 const response = await fetch(BASE_URL + endpoint, {
                     method: "GET",
                     headers: {
@@ -22,28 +24,51 @@
                 }
 
                 const data = await response.json();
+                console.log("Response received:", data);
+
+                if (!data || !data.message) {
+                    throw new Error("Response JSON tidak sesuai format yang diharapkan.");
+                }
+
                 alert(data.message);
 
                 if (data.charts) {
                     displayCharts(data.charts);
                 }
             } catch (error) {
-                console.error("Error:", error);
-                alert("Failed to fetch data. Ensure Flask server is running and CORS is enabled.");
+                console.error("Error saat fetch:", error);
+                alert("Gagal mengambil data. Pastikan Flask server berjalan dan CORS diaktifkan.");
             }
         }
 
+
+
         function displayCharts(charts) {
-            const chartContainer = document.getElementById('chart-container');
-            chartContainer.innerHTML = ''; // Clear previous charts
-            charts.forEach(chart => {
-                const img = document.createElement('img');
-                img.src = BASE_URL + chart; // Pastikan menggunakan BASE_URL
-                img.alt = "Chart";
-                img.style = "width: 100%; max-width: 600px; margin: 10px;";
-                chartContainer.appendChild(img);
-            });
+            try {
+                const chartContainer = document.getElementById('chart-container');
+                chartContainer.innerHTML = ''; // Clear previous charts
+                console.log("displayCharts dijalankan");
+
+                if (!Array.isArray(charts) || charts.length === 0) {
+                    throw new Error("No charts available to display.");
+                }
+
+                charts.forEach(chart => {
+                    console.log("charts di looping:", chart);
+                    const img = document.createElement('img');
+                    img.src = BASE_URL + chart; // Pastikan menggunakan BASE_URL
+                    img.alt = "Chart";
+                    img.style = "width: 100%; max-width: 600px; margin: 10px;";
+                    chartContainer.appendChild(img);
+                });
+
+                console.log("Semua charts berhasil ditampilkan.");
+            } catch (error) {
+                console.error("Error saat menampilkan charts:", error);
+                alert("Gagal menampilkan grafik. Periksa kembali data yang diterima.");
+            }
         }
+
     </script>
     <style>
         body {

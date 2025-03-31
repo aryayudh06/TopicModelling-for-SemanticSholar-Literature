@@ -4,7 +4,7 @@ import pandas as pd
 import os
 
 class Crawler:
-    def __init__(self, query="Artificial Intelligence", max_results=1500, save_path="../data/"):
+    def __init__(self, query="Artificial Intelligence", max_results=1500, save_path="./data/"):
         # Inisialisasi Crawler dengan query pencarian dan jumlah maksimum hasil.
         self.query = query
         self.max_results = max_results

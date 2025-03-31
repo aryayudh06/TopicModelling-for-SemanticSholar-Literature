@@ -40,7 +40,7 @@ def run_preprocess_pipeline():
     try:
         logging.info("Memulai preprocessing...")
         preprocessor = Preprocessor()
-        processed_data_path = preprocessor.process_data()
+        processed_data_path = preprocessor.run()
         logging.info("Preprocessing selesai.")
         return processed_data_path
     except Exception as e:
