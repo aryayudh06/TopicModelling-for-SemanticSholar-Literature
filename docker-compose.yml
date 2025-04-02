@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    container_name: topicmodelling
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./data:/app/data
+      - ./charts:/app/charts
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+
+  web:
+    image: nginx:latest
+    container_name: web_server
+    volumes:
+      - ./services/web:/usr/share/nginx/html
+    ports:
+      - "8080:80"
+    restart: unless-stopped
