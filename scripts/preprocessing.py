@@ -72,22 +72,22 @@ class Preprocessor:
         self.df['Processed_Title'] = self.df['title'].astype(str).apply(self.preprocess_text)
         self._invoke_callback("apply_preprocessing", "Preprocessing teks selesai!")
 
-    def topic_modeling(self):
-        # Menerapkan LDA Topic Modeling untuk menentukan topik dalam teks.
-        dtm = self.vectorizer.fit_transform(self.df['Processed_Title'])
-        self.lda.fit(dtm)
+    # def topic_modeling(self):
+    #     # Menerapkan LDA Topic Modeling untuk menentukan topik dalam teks.
+    #     dtm = self.vectorizer.fit_transform(self.df['Processed_Title'])
+    #     self.lda.fit(dtm)
 
-        # Menampilkan top 10 kata dalam setiap topik
-        topics_summary = []
-        for index, topic in enumerate(self.lda.components_):
-            top_words = [self.vectorizer.get_feature_names_out()[i] for i in topic.argsort()[-10:]]
-            topics_summary.append({"Topic": index, "Top Words": top_words})
+    #     # Menampilkan top 10 kata dalam setiap topik
+    #     topics_summary = []
+    #     for index, topic in enumerate(self.lda.components_):
+    #         top_words = [self.vectorizer.get_feature_names_out()[i] for i in topic.argsort()[-10:]]
+    #         topics_summary.append({"Topic": index, "Top Words": top_words})
 
-        # Menentukan topik dominan untuk setiap dokumen
-        topic_results = self.lda.transform(dtm)
-        self.df['Topic'] = topic_results.argmax(axis=1)
+    #     # Menentukan topik dominan untuk setiap dokumen
+    #     topic_results = self.lda.transform(dtm)
+    #     self.df['Topic'] = topic_results.argmax(axis=1)
 
-        self._invoke_callback("topic_modeling", {"message": "Topic modeling selesai!", "topics": topics_summary})
+    #     self._invoke_callback("topic_modeling", {"message": "Topic modeling selesai!", "topics": topics_summary})
 
     def save_data(self):
         # Menyimpan hasil preprocessing ke dalam file CSV.
@@ -100,9 +100,10 @@ class Preprocessor:
         try:
             self.load_data()
             self.apply_preprocessing()
-            self.topic_modeling()
+            # self.topic_modeling()
             self.save_data()
             self._invoke_callback("complete", "Preprocessing selesai!")
+            return self.save_path
         except Exception as e:
             self._invoke_callback("error", f"Terjadi kesalahan: {str(e)}")
 
