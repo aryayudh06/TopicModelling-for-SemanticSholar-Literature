@@ -9,3 +9,7 @@ scikit_learn==1.6.1
 torch==2.6.0
 transformers==4.50.3
 wordcloud==1.9.4
+bertopic
+sentence-transformers
+joblib
+gensim

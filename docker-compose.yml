@@ -1,4 +1,5 @@
 version: '3.8'
+
 services:
   app:
     build: .
@@ -6,8 +7,9 @@ services:
     ports:
       - "5000:5000"
     volumes:
-      - ./data:/app/data
-      - ./charts:/app/charts
+      - ./data:/app/data          # untuk menyimpan input/preprocessed
+      - ./charts:/app/charts      # untuk menyimpan chart visualisasi
+      - ./models:/app/models      # (baru) folder untuk simpan model hasil training
     environment:
       - PYTHONUNBUFFERED=1
     restart: unless-stopped

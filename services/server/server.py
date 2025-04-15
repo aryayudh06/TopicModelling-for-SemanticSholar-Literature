@@ -3,6 +3,7 @@ import os
 import sys
 import logging
 from flask_cors import CORS
+from scripts.model_training import TopicModelTrainer
 
 # Konfigurasi Logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -57,6 +58,19 @@ def run_visualization_pipeline():
     except Exception as e:
         logging.error(f"Error saat menjalankan visualisasi: {str(e)}")
         return {"error": str(e)}
+    
+def run_training_pipeline():
+    """Menjalankan pipeline training topic modeling."""
+    try:
+        logging.info("Memulai training model topik...")
+        trainer = TopicModelTrainer()
+        result = trainer.run()
+        logging.info("Training selesai.")
+        return result
+    except Exception as e:
+        logging.error(f"Error saat training: {str(e)}")
+        return {"error": str(e)}
+
 
 @app.route('/run-crawl', methods=['GET'])
 def run_crawl():
@@ -91,6 +105,15 @@ def run_visualize():
     return jsonify({
         "message": "Pipeline visualisasi selesai dijalankan.",
         "charts": charts
+    })
+
+@app.route('/run-training', methods=['GET'])
+def run_training():
+    """Endpoint untuk menjalankan training model topik."""
+    result = run_training_pipeline()
+    return jsonify({
+        "message": "Training selesai dijalankan.",
+        "result": result
     })
 
 @app.route('/charts/<filename>', methods=['GET'])
