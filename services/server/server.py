@@ -3,7 +3,6 @@ import os
 import sys
 import logging
 from flask_cors import CORS
-from scripts.model_training import TopicModelTrainer
 
 # Konfigurasi Logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -12,6 +11,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 # Import pipeline dari folder scripts
+from scripts.model_train import TrainingService
 from scripts.crawler import Crawler
 from scripts.preprocessing import Preprocessor
 from scripts.visualization import Visualization
@@ -63,8 +63,10 @@ def run_training_pipeline():
     """Menjalankan pipeline training topic modeling."""
     try:
         logging.info("Memulai training model topik...")
-        trainer = TopicModelTrainer()
-        result = trainer.run()
+        trainer = TrainingService(model_type='lda')
+        result =  trainer.train_model(
+        data_path="data/processed_semantic_data.csv",
+        )
         logging.info("Training selesai.")
         return result
     except Exception as e:
