@@ -65,7 +65,9 @@ def run_training_pipeline():
         logging.info("Memulai training model topik...")
         trainer = TrainingService(model_type='lda')
         result =  trainer.train_model(
-        data_path="data/processed_semantic_data.csv",
+            data_path="data/processed_semantic_data.csv",
+            text_column="Processed_Title",
+            output_csv="data/topic_modeling_results.csv"
         )
         logging.info("Training selesai.")
         return result
