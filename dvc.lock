@@ -1,0 +1,22 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python scripts/preprocessing.py data/semantic_scholar_results.json data/processed/semantic_scholar_results_clean.json
+    deps:
+    - path: data/semantic_scholar_results.json
+      hash: md5
+      md5: fb798461df5c11ef932c3cd4a8732a3f
+      size: 2312679
+    - path: scripts/preprocessing.py
+      hash: md5
+      md5: c48e09a46a1aab5eebe02fbe34f94366
+      size: 3093
+    outs:
+    - path: data/processed/metrics.json
+      hash: md5
+      md5: 3f776f646cf9ea9bfdabc29986d9ba7a
+      size: 155
+    - path: data/processed/semantic_scholar_results_clean.json
+      hash: md5
+      md5: c8ce619fef25467248b33f96a46588ec
+      size: 2177694

@@ -1,0 +1,10 @@
+stages:
+  preprocess:
+    cmd: python scripts/preprocessing.py data/semantic_scholar_results.json data/processed/semantic_scholar_results_clean.json
+    deps:
+      - data/semantic_scholar_results.json
+      - scripts/preprocessing.py
+    outs:
+      - data/processed/semantic_scholar_results_clean.json
+    metrics:
+      - data/processed/metrics.json  # Diubah untuk match dengan script
