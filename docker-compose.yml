@@ -1,18 +1,21 @@
-version: '3.8'
-
 services:
   app:
     build: .
     container_name: topicmodelling
     ports:
       - "5000:5000"
+      - "8000:8000" # For Prometheus metrics
     volumes:
-      - ./data:/app/data          # untuk menyimpan input/preprocessed
-      - ./charts:/app/charts      # untuk menyimpan chart visualisasi
-      - ./models:/app/models      # (baru) folder untuk simpan model hasil training
+      - ./data:/app/data
+      - ./charts:/app/charts
+      - ./models:/app/models
     environment:
       - PYTHONUNBUFFERED=1
-    restart: unless-stopped
+      - MLFLOW_TRACKING_URI=http://mlflow:5000
+    depends_on:
+      - mlflow
+    networks:
+      - monitoring
 
   web:
     image: nginx:latest
@@ -22,3 +25,51 @@ services:
     ports:
       - "8080:80"
     restart: unless-stopped
+
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:latest
+    container_name: mlflow
+    command: >
+      mlflow server --host 0.0.0.0 --port 5000 --backend-store-uri sqlite:///mlflow.db --default-artifact-root /mlruns
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./mlruns:/mlruns
+    networks:
+      - monitoring
+
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana
+    container_name: grafana
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana-storage:/var/lib/grafana
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin123
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+
+volumes:
+  grafana-storage:
+  mlruns:
+
+
+networks:
+  monitoring:
+    driver: bridge

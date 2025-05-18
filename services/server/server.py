@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 # Import pipeline dari folder scripts
-from scripts.model_train import TrainingService
+from scripts.model_train import BERTopicTrainingService
 from scripts.crawler import Crawler
 from scripts.preprocessing import Preprocessor
 from scripts.visualization import Visualization
@@ -63,13 +63,14 @@ def run_training_pipeline():
     """Menjalankan pipeline training topic modeling."""
     try:
         logging.info("Memulai training model topik...")
-        trainer = TrainingService(model_type='lda')
-        result =  trainer.train_model(
+        trainer = BERTopicTrainingService()
+        result = trainer.train_model(
             data_path="data/processed_semantic_data.csv",
             text_column="Processed_Title",
-            output_csv="data/topic_modeling_results.csv"
+            output_csv="data/topic_results.csv"
         )
         logging.info("Training selesai.")
+
         return result
     except Exception as e:
         logging.error(f"Error saat training: {str(e)}")

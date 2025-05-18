@@ -1,0 +1,31 @@
+{
+  "title": "BERTopic Monitoring",
+  "panels": [
+    {
+      "title": "Training Duration",
+      "type": "graph",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "rate(bertopic_training_seconds_sum[5m])/rate(bertopic_training_seconds_count[5m])",
+          "legendFormat": "Duration"
+        }
+      ]
+    },
+    {
+      "title": "Coherence Score",
+      "type": "gauge",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "bertopic_coherence_score",
+          "legendFormat": "Score"
+        }
+      ],
+      "options": {
+        "minValue": 0,
+        "maxValue": 1
+      }
+    }
+  ]
+}

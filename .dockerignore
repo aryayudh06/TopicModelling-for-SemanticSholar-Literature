@@ -1,6 +1,37 @@
+# Folder/fIle umum yang sebaiknya dihindari saat copy ke image
 __pycache__/
 *.pyc
 *.pyo
 *.pyd
-crawler/
-notebook/
+*.db
+*.sqlite3
+*.log
+
+# Dataset besar atau model
+*.csv
+*.xlsx
+*.pdf
+*.pt
+*.pkl
+*.joblib
+*.h5
+*.onnx
+
+# Folder model atau data (jika tidak dibutuhkan di image build)
+data/
+models/
+charts/
+
+# Git & editor files
+.git/
+.gitignore
+.vscode/
+*.swp
+
+# Jika ada node project di folder
+node_modules/
+
+# Cache atau environment
+.env
+*.egg-info
+.DS_Store

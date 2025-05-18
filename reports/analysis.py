@@ -186,99 +186,93 @@ class ReportGenerator:
 """)
 
     def generate_report(self):
-        """Main method to generate the report"""
-        try:
-            # 1. Load data
-            metrics, df = self._load_data()
-            available_columns = df.columns.tolist()
-            
-            # 2. Generate visualizations as base64
-            viz_data = self._generate_visualizations(df)
-            
-            # Dalam template HTML, gunakan:
-            report_content += f"""
-            <h2>Dataset Visualizations</h2>
-            <img src="{viz_data}" alt="Dataset Visualizations" style="max-width: 100%; height: auto;">
-            """
-            
-            # 3. Generate statistics
-            statistics = self._generate_statistics(df)
-            
-            # 4. Prepare report content
-            report_content = f"""
-<h1>Technical Report: Semantic Scholar Dataset Analysis</h1>
+      """Main method to generate the report"""
+      try:
+          # 1. Load data
+          metrics, df = self._load_data()
+          available_columns = df.columns.tolist()
+          
+          # Generate visualizations as base64
+          viz_data = self._generate_visualizations(df)
+          
+          # 3. Generate statistics
+          statistics = self._generate_statistics(df)
+          
+          # 4. Prepare report content
+          report_content = f"""
+  <h1>Technical Report: Semantic Scholar Dataset Analysis</h1>
 
-<div class="metrics">
-    <p><strong>Report Generated</strong>: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
-    
-    <h2>Dataset Metadata</h2>
-    <ul>
-        <li>Original records: {metrics.get('original_count', 'N/A')}</li>
-        <li>Processed records: {metrics.get('processed_count', 'N/A')}</li>
-        <li>Processing date: {metrics.get('processing_date', 'N/A')}</li>
-        <li>Available columns: {', '.join(available_columns)}</li>
-    </ul>
-</div>
+  <div class="metrics">
+      <p><strong>Report Generated</strong>: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+      
+      <h2>Dataset Metadata</h2>
+      <ul>
+          <li>Original records: {metrics.get('original_count', 'N/A')}</li>
+          <li>Processed records: {metrics.get('processed_count', 'N/A')}</li>
+          <li>Processing date: {metrics.get('processing_date', 'N/A')}</li>
+          <li>Available columns: {', '.join(available_columns)}</li>
+      </ul>
+  </div>
 
-<h2>Processing Steps</h2>
-<ol>
-    <li>Text cleaning (lowercasing, punctuation removal)</li>
-    <li>Stopword removal</li>
-    <li>Lemmatization</li>
-    <li>Title processing ('processed_title' column added)</li>
-</ol>
+  <h2>Processing Steps</h2>
+  <ol>
+      <li>Text cleaning (lowercasing, punctuation removal)</li>
+      <li>Stopword removal</li>
+      <li>Lemmatization</li>
+      <li>Title processing ('processed_title' column added)</li>
+  </ol>
 
-<h2>Dataset Visualizations</h2>
-<img src="{viz_path}" alt="Dataset Visualizations">
-"""
+  <h2>Dataset Visualizations</h2>
+  <img src="{viz_data}" alt="Dataset Visualizations" style="max-width: 100%; height: auto;">
+  """
 
-            # Add statistics section
-            if statistics:
-                report_content += "<h2>Statistical Analysis</h2>"
-                for stat in statistics:
-                    report_content += f"""
-<div class="stat-block">
-    <h3>{stat['title']}</h3>
-    <ul>
-        {"".join(f"<li>{item}</li>" for item in stat['items'])}
-    </ul>
-</div>
-"""
-            else:
-                report_content += """
-<div class="warning">
-    No citation statistics available in the dataset
-</div>
-"""
+          # Add statistics section
+          if statistics:
+              report_content += "<h2>Statistical Analysis</h2>"
+              for stat in statistics:
+                  report_content += f"""
+  <div class="stat-block">
+      <h3>{stat['title']}</h3>
+      <ul>
+          {"".join(f"<li>{item}</li>" for item in stat['items'])}
+      </ul>
+  </div>
+  """
+          else:
+              report_content += """
+  <div class="warning">
+      No citation statistics available in the dataset
+  </div>
+  """
 
-            # 5. Generate PDF
-            template = self._generate_html_template()
-            pdf_path = os.path.join(self.report_dir, 'technical_report.pdf')
-            
-            pdfkit.from_string(
-                template.render(
-                    content=report_content,
-                    date=datetime.now().strftime('%Y-%m-%d %H:%M')
-                ),
-                pdf_path,
-                options={
-                    'page-size': 'A4',
-                    'margin-top': '15mm',
-                    'margin-right': '15mm',
-                    'margin-bottom': '15mm',
-                    'margin-left': '15mm',
-                    'encoding': 'UTF-8',
-                    'quiet': ''
-                },
-                configuration=self.config
-            )
+          # 5. Generate PDF
+          template = self._generate_html_template()
+          pdf_path = os.path.join(self.report_dir, 'technical_report.pdf')
+          
+          pdfkit.from_string(
+              template.render(
+                  content=report_content,
+                  date=datetime.now().strftime('%Y-%m-%d %H:%M')
+              ),
+              pdf_path,
+              options={
+                  'page-size': 'A4',
+                  'margin-top': '15mm',
+                  'margin-right': '15mm',
+                  'margin-bottom': '15mm',
+                  'margin-left': '15mm',
+                  'encoding': 'UTF-8',
+                  'quiet': ''
+              },
+              configuration=self.config
+          )
 
-            print(f"Technical report successfully generated: {pdf_path}")
-            return True
+          print(f"Technical report successfully generated: {pdf_path}")
+          return True
 
-        except Exception as e:
-            print(f"Error generating report: {str(e)}")
-            return False
+      except Exception as e:
+          print(f"Error generating report: {str(e)}")
+          return False
 
 if __name__ == "__main__":
     generator = ReportGenerator()
